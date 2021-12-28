@@ -2,8 +2,105 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<h1>PCR-test</h1>
 
 
+<form action="" class="mt-5" method="POST" novalidate>
+    {% csrf_token %}
+    {{form|crispy}}
+    <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary">Afprøv Primer</button>
+    </div>
+</form>
+
+{% if primer %}
+
+<div class="table-responsive my-5">
+    <table class="table"> 
+        <tr>
+            <td>#</td>
+            {% for x in dna %}
+                <td>{{ forloop.counter0 }}</td>
+            {% endfor %}
+        </tr>
+        <tr class="text-center">
+            <td class="text-nowrap">DNA-streng</td>
+            {% for i in dna %}
+                {% if i == 'a' %}
+                    <td class="alert alert-success font-weight-bold">A</td>
+                {% elif i == 't' %}
+                    <td class="alert alert-info font-weight-bold">T</td>
+                {% elif i == 'c' %}
+                    <td class="alert alert-warning font-weight-bold">C</td>
+                {% elif i == 'g' %}
+                    <td class="alert alert-danger font-weight-bold">G</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        <tr class="text-center">
+            <td class="border">Primer</td>
+            {% for i in primer %}
+                {% if i == 'a' %}
+                    <td class="alert alert-success font-weight-bold">A</td>
+                {% elif i == 't' %}
+                    <td class="alert alert-info font-weight-bold">T</td>
+                {% elif i == 'c' %}
+                    <td class="alert alert-warning font-weight-bold">C</td>
+                {% elif i == 'g' %}
+                    <td class="alert alert-danger font-weight-bold">G</td>
+                {% else %}
+                    <td class="border"></td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+
+<ul>
+    <li>Primerens smeltepunkt er {{ melting_point }}&#8451.</li>
+    {% if occurences == 1 %}
+        <li>Primeren passer præcis {{ occurences }} sted i DNA-strengen.</li>
+    {% else %}
+        <li>Primeren passer {{ occurences }} forskellige steder i DNA-strengen. </li>
+    {% endif %}
+</ul>
+<table class="table table-striped my-5"> 
+    <thead>
+        <tr>
+            <th>Krav til primer</th>
+            <th>Uddybning</th>
+            <th>Opfyldt</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Er specifik</td>
+            <td>Primeren passer præcis ét sted på DNA-strengen</td>
+            {% if occurences == 1 %}
+                <td style="color:green"><big>&#10003;</big></td>
+            {% else %}
+                <td style="color:red"><big>&#10007;</big></td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Rigtigt smeltepunkt</td>
+            <td>Primerens smeltepunkt ligger mellem 52&#8451 og 58&#8451</td>
+            {% if good_melting_point %}
+                <td style="color:green"><big>&#10003;</big></td>
+            {% else %}
+                <td style="color:red"><big>&#10007;</big></td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Kan binde på DNA-strengen</td>
+            <td>2 eller 3 ud af de sidste 5 baser skal være C eller G</td>
+            {% if primer_tail_condition %}
+                <td style="color:green"><big>&#10003;</big></td>
+            {% else %}
+                <td style="color:red"><big>&#10007;</big></td>
+            {% endif %}
+        </tr>
+    </tbody>
+</table>
+{% endif %}
 {% endblock content %}
 
