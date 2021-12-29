@@ -6,7 +6,7 @@
 
 <form action="" class="mt-5" method="POST" novalidate>
     {% csrf_token %}
-    {{form|crispy}}
+    {{ form|crispy }}
     <div class="d-flex justify-content-center">
         <button type="submit" class="btn btn-primary">Afprøv Primer</button>
     </div>
@@ -15,24 +15,24 @@
 {% if primer %}
 
 <div class="table-responsive my-5">
-    <table class="table"> 
+    <table class="table" > 
         <tr>
-            <td>#</td>
-            {% for x in dna %}
-                <td>{{ forloop.counter0 }}</td>
+            <td class="border-top-0"></td>
+            {% for _ in dna %}
+                <td class="text-muted border-top-0 pb-0"><small>{{ forloop.counter0 }}</small></td>
             {% endfor %}
         </tr>
         <tr class="text-center">
             <td class="text-nowrap">DNA-streng</td>
             {% for i in dna %}
                 {% if i == 'a' %}
-                    <td class="alert alert-success font-weight-bold">A</td>
+                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
                 {% elif i == 't' %}
-                    <td class="alert alert-info font-weight-bold">T</td>
+                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
                 {% elif i == 'c' %}
-                    <td class="alert alert-warning font-weight-bold">C</td>
+                    <td class="alert alert-warning font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">C</td>
                 {% elif i == 'g' %}
-                    <td class="alert alert-danger font-weight-bold">G</td>
+                    <td class="alert alert-danger font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">G</td>
                 {% endif %}
             {% endfor %}
         </tr>
@@ -40,13 +40,13 @@
             <td class="border">Primer</td>
             {% for i in primer %}
                 {% if i == 'a' %}
-                    <td class="alert alert-success font-weight-bold">A</td>
+                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
                 {% elif i == 't' %}
-                    <td class="alert alert-info font-weight-bold">T</td>
+                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
                 {% elif i == 'c' %}
-                    <td class="alert alert-warning font-weight-bold">C</td>
+                    <td class="alert alert-warning font-weight-bold" style="border-radius:0; border:1px solid #D3D3D3">C</td>
                 {% elif i == 'g' %}
-                    <td class="alert alert-danger font-weight-bold">G</td>
+                    <td class="alert alert-danger font-weight-bold" style="border-radius:0; border:1px solid #D3D3D3">G</td>
                 {% else %}
                     <td class="border"></td>
                 {% endif %}
