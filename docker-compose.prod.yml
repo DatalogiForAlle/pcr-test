@@ -31,7 +31,7 @@ services:
       - web
     environment:
       - VIRTUAL_HOST=pcr-test.dataekspeditioner.dk
-      - VIRTUAL_PORT=1357
+      - VIRTUAL_PORT=1367
       - LETSENCRYPT_HOST=pcr-test.dataekspeditioner.dk
       - LETSENCRYPT_EMAIL=kmollerschmidt@gmail.com
       - url=https://pcr-test.dataekspeditioner.dk
