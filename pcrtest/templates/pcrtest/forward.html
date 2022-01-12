@@ -16,19 +16,21 @@
         <button type="submit" class="btn btn-primary">Afprøv forward primer</button>
     </div>
 </form>
-
+<br><br>
 {% if forward_primer_to_show %}
 
 <!-- Include visual representation of dna and primer -->
 {% include 'pcrtest/forward_include.html' %}
 
 <ul>
-    <li>Din primers smeltepunkt er <span class="font-weight-bold">{{ melting_point }}</span>&#8451.</li>
     {% if occurences == 1 %}
         <li>Din primer passer præcis <span class="font-weight-bold">{{ occurences }}</span> sted i DNA-strengen.</li>
     {% else %}
         <li>Din primer passer <span class="font-weight-bold">{{ occurences }}</span> forskellige steder</span> i DNA-strengen. </li>
     {% endif %}
+    <li>Din primers smeltepunkt er <span class="font-weight-bold">{{ melting_point }}</span>&#8451.</li>
+    <li>Netop <span class="font-weight-bold">{{ tail_count }}</span> ud af de sidste 5 baser i din primer er enten 'C' eller 'G'</li>
+
 </ul>
 <table class="table table-striped my-5"> 
     <thead>
@@ -68,16 +70,13 @@
         </tr>
     </tbody>
 </table>
-    {% if primer_is_good %}    
+
+    {% if request.session.forward_primer_is_good %}    
         <div class="alert alert-success">
             Din forward primer lever op til alle krav. Du kan nu gå videre og konstuere en 'reverse primer' til DNA-strengen.
         </div>
-        <form action="{% url 'reverse-primer' %}" class="mt-5" method="POST" novalidate>
-            {% csrf_token %}
+        <form action="{% url 'reverse-primer' %}" class="mt-5" method="GET">
             <div class="d-flex justify-content-center">
-                <input type="hidden" name="upper_dna" value="{{ upper_dna }}">
-                <input type="hidden" name="forward_primer_start" value="{{ forward_primer_start }}">
-                <input type="hidden" name="forward_primer_length" value="{{ forward_primer_length }}">
                 <button type="submit" class="btn btn-primary">Lav reverse primer</button>
             </div>
         </form>
@@ -86,7 +85,7 @@
             Din forward primer kan ikke bruges. Prøv igen!
         </div>
     {% endif %}
-    <br><br>
+        <br><br>
 {% endif %}
 
 

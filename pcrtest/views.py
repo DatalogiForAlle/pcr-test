@@ -35,6 +35,7 @@ def forward_primer(request):
     context["range"] = range(36)
 
     if request.method == 'POST':
+
         form = ForwardPrimerForm(request.POST)
         if form.is_valid():
             dna = form.cleaned_data['dna'].lower()
@@ -42,13 +43,12 @@ def forward_primer(request):
             primer_length = form.cleaned_data['length']
 
             primer = dna[primer_start: primer_start + primer_length]
-            context['upper_dna'] = dna
             context['lower_dna'] = inverse_string(dna)
         
-           # Make the primer string to be shown on page
+            # Make the primer string to be shown on page
             context['forward_primer_to_show'] = " " * primer_start + primer + \
                 " " * (len(dna) - primer_start - primer_length)
-
+          
             # Calculation of the primer's melting point
             num_c = primer.count('c')
             num_g = primer.count('g') 
@@ -60,30 +60,38 @@ def forward_primer(request):
             primer_tail = primer[-5:]
             tail_count = primer_tail.count('c') + primer_tail.count('g')
             context['primer_tail_condition'] = 2 <= tail_count <= 3
+            context['tail_count'] = tail_count
 
             # Calculate number of places the primer fits the lower DNA-string
             context['occurences'] = count_substring(dna, primer)
 
             # Does primer satisfy all criteria?
-            context['primer_is_good'] = (context['occurences'] == 1) and context['primer_tail_condition'] and context['good_melting_point']  
-
-            # Additional info we need
-            context['forward_primer_start'] = form.cleaned_data['start']
-            context['forward_primer_length'] = form.cleaned_data['length']
+            primer_is_good = (context['occurences'] == 1) and context['primer_tail_condition'] and context['good_melting_point']  
+            
+            # Store session variables
+            request.session['forward_primer_is_good'] = primer_is_good
+            request.session['upper_dna'] = dna
+            request.session['forward_primer_start'] = form.cleaned_data['start']
+            request.session['forward_primer_length'] = form.cleaned_data['length']
+            
 
     context['form'] = form
 
 
     return render(request, "pcrtest/forward.html", context)
 
-
-@require_POST
+@require_GET
 def reverse_primer(request):
-    forward_primer_start = int(request.POST['forward_primer_start']) - 1 
-    forward_primer_length = int(request.POST['forward_primer_length'])
-    upper_dna = request.POST['upper_dna']
+    if not request.session['forward_primer_is_good']:
+        return HttpResponseRedirect(reverse('forward-primer'))
+
+    forward_primer_start = int(request.session['forward_primer_start']) - 1 
+    forward_primer_length = int(request.session['forward_primer_length'])
+    upper_dna = request.session['upper_dna']
+    dna_length = len(upper_dna)
+
     lower_dna = inverse_string(upper_dna)
-    reverse_primer_to_show = "-" * len(upper_dna)
+    reverse_primer_to_show = "-" * dna_length
     f_primer = upper_dna[forward_primer_start: forward_primer_start + forward_primer_length]
     forward_primer_to_show = " " * forward_primer_start + f_primer + \
         " " * (len(upper_dna) - forward_primer_start - forward_primer_length)
@@ -92,17 +100,15 @@ def reverse_primer(request):
         'upper_dna':upper_dna,
         'lower_dna':lower_dna,
         'forward_primer_to_show':forward_primer_to_show,
-        'forward_primer_start': forward_primer_start,
-        'forward_primer_length':forward_primer_length,
         'counter': range(1, len(upper_dna) + 1)[::-1]
         }
 
-    if 'reverse_primer_start' in request.POST:
-        form = ReversePrimerForm(len(upper_dna), request.POST)
+    if 'reverse_primer_start' in request.GET:
+        form = ReversePrimerForm(len(upper_dna), request.GET)
         if form.is_valid():
             reverse_primer_start = int(
-                request.POST['reverse_primer_start']) - 1
-            reverse_primer_length = int(request.POST['reverse_primer_length'])
+                request.GET['reverse_primer_start']) - 1
+            reverse_primer_length = int(request.GET['reverse_primer_length'])
 
             reverse_primer_start_from_left = len(upper_dna) - reverse_primer_start - reverse_primer_length
             reverse_primer_end_from_left = len(upper_dna) - reverse_primer_start 
@@ -111,7 +117,28 @@ def reverse_primer(request):
             context['reverse_primer'] = reverse_primer   
             reverse_primer_to_show = " " * reverse_primer_start_from_left + reverse_primer + \
                 " " * (len(upper_dna) - reverse_primer_end_from_left)
-           
+
+            # Calculation of the reverse primer's melting point
+            num_c = reverse_primer.count('c')
+            num_g = reverse_primer.count('g')
+            reverse_primer_melting_point = round(
+                64.9 + 41*(num_c + num_g)/reverse_primer_length - 41*16.4/reverse_primer_length, 1)
+            context['melting_point'] = reverse_primer_melting_point
+            context['good_melting_point'] = 52 <= reverse_primer_melting_point <= 58
+
+            # Either 2 or 3 of the last three bases in the primer has to be either C or G
+            reverse_primer_tail = reverse_primer[:5]
+            tail_count = reverse_primer_tail.count('c') + reverse_primer_tail.count('g')
+            context['primer_tail_condition'] = 2 <= tail_count <= 3
+            context['tail_count'] = tail_count
+
+            # Calculate number of places the primer fits the lower DNA-string
+            context['occurences'] = count_substring(lower_dna, reverse_primer)
+
+            # Does primer satisfy all criteria?
+            context["reverse_primer_is_good"] = (
+                context['occurences'] == 1) and context['primer_tail_condition'] and context['good_melting_point']
+
 
     context['reverse_primer_to_show'] = reverse_primer_to_show
 

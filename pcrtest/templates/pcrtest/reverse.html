@@ -9,26 +9,21 @@
     Udgangspunktet er den DNA-streng og den forward primer, du fandt frem til i opgave 1.
 </p>
 
-<form action="" class="mt-5" method="POST" novalidate>
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="hidden" name="forward_primer_start" value="{{ forward_primer_start }}">
-    <input type="hidden" name="forward_primer_length" value="{{ forward_primer_length }}">
-    <input type="hidden" name="upper_dna" value="{{ upper_dna }}">
-    
+<form action="" class="mt-5" method="GET" novalidate>
+    {{ form|crispy }}   
     <div class="d-flex justify-content-center">
         <button type="submit" class="btn btn-primary mb-5">Afprøv reverse primer</button>
     </div>
 </form>
 
-<h4 class="mt-5">Reverse primer</h4>
+<h4 class="mt-5 mb-0 pb-0">Reverse primer</h4>
 
 <div class="table-responsive mb-5">
     <table class="table" > 
-        <tr>
-            <td class="border-top-0"></td>
+        <tr class="mt-0 pt-0">
+            <td class="border-top-0 mt-0 pt-0"></td>
             {% for i in counter %}
-                <td class="text-muted text-center border-top-0 pb-0"><small>{{ i }}</small></td>
+                <td class="text-muted text-center border-top-0 pb-0 pt-0"><small>{{ i }}</small></td>
             {% endfor %}
         </tr>
         <tr class="text-center">
@@ -71,5 +66,65 @@
 {% include 'pcrtest/forward_include.html' %}
 
 
+<h4>Fakta om din reverse primer</h4>
+<ul>
+    {% if occurences == 1 %}
+        <li>Din reverse primer passer præcis <span class="font-weight-bold">{{ occurences }}</span> sted i DNA-strengen.</li>
+    {% else %}
+        <li>Din reverse primer passer <span class="font-weight-bold">{{ occurences }}</span> forskellige steder</span> i DNA-strengen. </li>
+    {% endif %}
+    <li>Din reverse primers smeltepunkt er <span class="font-weight-bold">{{ melting_point }}</span>&#8451.</li>
+    <li>Netop <span class="font-weight-bold">{{ tail_count }}</span> ud af de sidste 5 baser i din reverse primer er enten 'C' eller 'G'</li>
+</ul>
+
+<table class="table table-striped my-5"> 
+    <thead>
+        <tr>
+            <th>Krav til reverse primer</th>
+            <th>Uddybning</th>
+            <th>Opfyldt</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Er specifik</td>
+            <td>Primeren skal passe præcis ét sted på DNA-strengen</td>
+            {% if occurences == 1 %}
+                <td style="color:green"><big>&#10003;</big></td>
+            {% else %}
+                <td style="color:red"><big>&#10007;</big></td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Rigtigt smeltepunkt</td>
+            <td>Primerens smeltepunkt skal være mellem 52&#8451 og 58&#8451</td>
+            {% if good_melting_point %}
+                <td style="color:green"><big>&#10003;</big></td>
+            {% else %}
+                <td style="color:red"><big>&#10007;</big></td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Kan binde på DNA-strengen</td>
+            <td>2 eller 3 ud af de sidste 5 baser skal være C eller G</td>
+            {% if primer_tail_condition %}
+                <td style="color:green"><big>&#10003;</big></td>
+            {% else %}
+                <td style="color:red"><big>&#10007;</big></td>
+            {% endif %}
+        </tr>
+    </tbody>
+</table>
+
+{% if reverse_primer_is_good %}    
+<div class="alert alert-success">
+    Dine primere primer lever op til alle krav! 
+</div>
+{% else %}
+<div class="alert alert-warning">
+    Din reverse primer kan ikke bruges. Prøv igen!
+</div>
+{% endif %}
+<br><br>
 
 {% endblock content %}
