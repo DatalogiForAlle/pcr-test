@@ -19,11 +19,3 @@ class HomePageViewTests(SimpleTestCase):
                 'forward-primer'))
 
 
-class ReverseViewTests(SimpleTestCase):
-    def test_reverse_page_status_code(self):
-        """ Reverse primer page exists at proper url and uses correct template """
-        data = {'upper_dna': '', 'forward_primer_start': 0, 'forward_primer_length': 0}
-
-        response = self.client.post(reverse('reverse-primer'), data = data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'pcrtest/reverse.html')
