@@ -3,6 +3,8 @@
 
 {% block content %}
 
+<h3 class="mt-5">Konstruktion af forward primer</h3>
+<p></p>
 
 <form action="" class="mt-5" method="POST" novalidate>
     {% csrf_token %}
@@ -16,28 +18,8 @@
 
 <div class="table-responsive my-5">
     <table class="table" > 
-        <tr>
-            <td class="border-top-0"></td>
-            {% for _ in dna %}
-                <td class="text-muted border-top-0 pb-0"><small>{{ forloop.counter0 }}</small></td>
-            {% endfor %}
-        </tr>
         <tr class="text-center">
-            <td class="text-nowrap">DNA-streng</td>
-            {% for i in dna %}
-                {% if i == 'a' %}
-                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
-                {% elif i == 't' %}
-                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
-                {% elif i == 'c' %}
-                    <td class="alert alert-warning font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">C</td>
-                {% elif i == 'g' %}
-                    <td class="alert alert-danger font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">G</td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-        <tr class="text-center">
-            <td class="border">Primer</td>
+            <td class="border-bottom">Forward primer</td>
             {% for i in primer %}
                 {% if i == 'a' %}
                     <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
@@ -52,6 +34,26 @@
                 {% endif %}
             {% endfor %}
         </tr>
+        <tr class="text-center">
+            <td class="text-nowrap">Nedre DNA-streng</td>
+            {% for i in lower_dna %}
+                {% if i == 'a' %}
+                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
+                {% elif i == 't' %}
+                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
+                {% elif i == 'c' %}
+                    <td class="alert alert-warning font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">C</td>
+                {% elif i == 'g' %}
+                    <td class="alert alert-danger font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">G</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        <tr>
+            <td></td>
+            {% for _ in lower_dna %}
+                <td class="text-muted text-center border-top-0 pb-0"><small>{{ forloop.counter }}</small></td>
+            {% endfor %}
+        </tr>
     </table>
 </div>
 
@@ -60,7 +62,7 @@
     {% if occurences == 1 %}
         <li>Primeren passer præcis {{ occurences }} sted i DNA-strengen.</li>
     {% else %}
-        <li>Primeren passer {{ occurences }} forskellige steder i DNA-strengen. </li>
+        <li>Primeren passer {{ occurences }} forskellige steder</span> i DNA-strengen. </li>
     {% endif %}
 </ul>
 <table class="table table-striped my-5"> 

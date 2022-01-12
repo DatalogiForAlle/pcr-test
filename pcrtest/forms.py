@@ -3,15 +3,14 @@ from django import forms
 class PrimerForm(forms.Form):
     
     dna = forms.CharField(max_length=300, label="DNA-streng", initial="TGGCCTGTGGGTCCCCCCATAGATCATAAGCCCAGGAGGAAGGGCTGTGTTTCAGGGCTGTGATCACTAGCACCCAGAACCGTCGACTGGCACAGAACAGGCACTTAGGGAACCCTCACTGAATGAATGAATGAATGAATGAATGAATGAATGTTTGGGCAAATAAACGCTGACAAGGACAGAAGGGCCTAGCGGGAAGGG",
-                                    help_text="Indtast DNA-streng")
+                                    help_text="Indtast (den øvre) DNA-streng")
 
     start = forms.IntegerField(label="Primer start",
-                               help_text="Hvor mange bogstaver fra venstre skal din primer begynde? Angiv et heltal mellem 0 og DNA-strengens længde.",
-                               min_value=0
+                               help_text="Ved hvilken baseposition (talt fra højre på DNA-strengen) skal din primer begynde? Angiv et heltal på mindst 1.",
+                               min_value=1
                                )
-
     length = forms.IntegerField(label="Primer længde", min_value=5,
-                               help_text="Hvor mange baser skal din primer bestå af? Angiv et heltal større end 4.")
+                               help_text="Hvor mange baser skal din primer bestå af? Angiv et heltal på mindst 5.")
 
 
     # start-værdi + length må ikke være længere end dna-strengens længde
@@ -33,7 +32,6 @@ class PrimerForm(forms.Form):
         Form validation that depends on more than one input value. 
         Error message will be shown on top of the form. 
         """
-        # Ensure start + length <= len(dna)
         cleaned_data = super().clean()
         length = cleaned_data.get("length")
         start = cleaned_data.get("start")
@@ -41,16 +39,8 @@ class PrimerForm(forms.Form):
 
         if length and start and dna:
 
-            if start > len(dna):
+           if start + length > len(dna) + 1:
                 raise forms.ValidationError(
-                    f"Primerens startposition må ikke være større end DNA-strengens længde (={len(dna)})")
-
-            if length > len(dna):
-                raise forms.ValidationError(
-                    f"Primerens startposition må ikke være større end DNA-strengens længde (={len(dna)})")
-
-            if start + length > len(dna):
-                raise forms.ValidationError(
-                    "Summen af primerens startposition og længde må ikke være større en DNA-strengens længde")
+                    "DNA-strengen er for kort til dine valg for primeren")
         
         return cleaned_data
