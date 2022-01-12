@@ -65,7 +65,7 @@
 <!-- Include visual representation of dna and primer -->
 {% include 'pcrtest/forward_include.html' %}
 
-
+{% if reverse_primer %}
 <h4>Fakta om din reverse primer</h4>
 <ul>
     {% if occurences == 1 %}
@@ -118,7 +118,7 @@
 
 {% if reverse_primer_is_good %}    
 <div class="alert alert-success">
-    Dine primere primer lever op til alle krav! 
+    Dine primere lever op til alle krav! 
 </div>
 {% else %}
 <div class="alert alert-warning">
@@ -126,5 +126,6 @@
 </div>
 {% endif %}
 <br><br>
+{% endif %}
 
 {% endblock content %}
