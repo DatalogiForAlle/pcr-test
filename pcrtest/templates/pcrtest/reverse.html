@@ -1,0 +1,75 @@
+{% extends 'pcrtest/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h2 class="mt-5"><span class="h4">Opgave 2: </span>Konstruktion af reverse primer</h2>
+<p>
+    Du skal nu konstuerer en brugbar 'reverse primer' til brug ved PCR-testen.<br>
+    Udgangspunktet er den DNA-streng og den forward primer, du fandt frem til i opgave 1.
+</p>
+
+<form action="" class="mt-5" method="POST" novalidate>
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="hidden" name="forward_primer_start" value="{{ forward_primer_start }}">
+    <input type="hidden" name="forward_primer_length" value="{{ forward_primer_length }}">
+    <input type="hidden" name="upper_dna" value="{{ upper_dna }}">
+    
+    <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary mb-5">Afprøv reverse primer</button>
+    </div>
+</form>
+
+<h4 class="mt-5">Reverse primer</h4>
+
+<div class="table-responsive mb-5">
+    <table class="table" > 
+        <tr>
+            <td class="border-top-0"></td>
+            {% for i in counter %}
+                <td class="text-muted text-center border-top-0 pb-0"><small>{{ i }}</small></td>
+            {% endfor %}
+        </tr>
+        <tr class="text-center">
+            <td class="text-nowrap">Øvre DNA-streng</td>
+            {% for i in upper_dna %}
+                {% if i == 'a' %}
+                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
+                {% elif i == 't' %}
+                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
+                {% elif i == 'c' %}
+                    <td class="alert alert-warning font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">C</td>
+                {% elif i == 'g' %}
+                    <td class="alert alert-danger font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">G</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        <tr class="text-center">
+            <td class="border-bottom text-nowrap">Reverse primer</td>
+            {% for i in reverse_primer_to_show %}
+                {% if i == 'a' %}
+                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
+                {% elif i == 't' %}
+                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
+                {% elif i == 'c' %}
+                    <td class="alert alert-warning font-weight-bold" style="border-radius:0; border:1px solid #D3D3D3">C</td>
+                {% elif i == 'g' %}
+                    <td class="alert alert-danger font-weight-bold" style="border-radius:0; border:1px solid #D3D3D3">G</td>
+                {% elif i == '-' %}
+                    <td class="border">?</td>
+                {% else %}
+                    <td class="border"></td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+
+<h4>Forward primer <span class="text-black-50 h5">(Færdig)</span></h4>
+<!-- Include visual representation of dna and primer -->
+{% include 'pcrtest/forward_include.html' %}
+
+
+
+{% endblock content %}

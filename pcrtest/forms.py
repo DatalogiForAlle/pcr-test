@@ -1,6 +1,6 @@
 from django import forms
 
-class PrimerForm(forms.Form):
+class ForwardPrimerForm(forms.Form):
     
     dna = forms.CharField(max_length=300, label="Øvre DNA-streng", initial="TGGCCTGTGGGTCCCCCCATAGATCATAAGCCCAGGAGGAAGGGCTGTGTTTCAGGGCTGTGATCACTAGCACCCAGAACCGTCGACTGGCACAGAACAGGCACTTAGGGAACCCTCACTGAATGAATGAATGAATGAATGAATGAATGAATGTTTGGGCAAATAAACGCTGACAAGGACAGAAGGGCCTAGCGGGAAGGG",
                                     help_text="Indtast den øvre del af DNA-streng")
@@ -11,10 +11,7 @@ class PrimerForm(forms.Form):
                                min_value=1
                                )
     length = forms.IntegerField(label="Primer længde", min_value=5, initial=21,
-                               help_text="Hvor mange baser skal din primer bestå af? Angiv et heltal på mindst 5.")
-
-
-    # start-værdi + length må ikke være længere end dna-strengens længde
+                               help_text="Hvor mange baser skal din forward primer bestå af? Angiv et heltal på mindst 5.")
 
     def clean_dna(self):
         """ DNA string should only consist of A, C, T and G's """
@@ -44,4 +41,35 @@ class PrimerForm(forms.Form):
                 raise forms.ValidationError(
                     "DNA-strengen er for kort til dine valg for primeren")
         
+        return cleaned_data
+
+
+class ReversePrimerForm(forms.Form):
+    
+    reverse_primer_start = forms.IntegerField(label="Reverse primer start",
+                               help_text="Ved hvilken baseposition (talt fra højre) skal din primer begynde? Angiv et heltal på mindst 1.",
+                               min_value=1)
+    reverse_primer_length = forms.IntegerField(label="Reverse primer længde", 
+                               help_text="Hvor mange baser skal din reverse primer bestå af? Angiv et heltal på mindst 5.",
+                               min_value=5)
+
+    def __init__(self, dna_length, *args, **kwargs):
+        super(ReversePrimerForm, self).__init__(*args, **kwargs)
+        self.dna_length = dna_length
+
+    def clean(self):
+        """ 
+        Form validation that depends on more than one input value. 
+        Error message will be shown on top of the form. 
+        """
+        cleaned_data = super().clean()
+        length = cleaned_data.get("reverse_primer_length")
+        start = cleaned_data.get("reverse_primer_start")
+
+        if length and start:
+
+           if start + length > self.dna_length + 1:
+               raise forms.ValidationError(
+                   "DNA-strengen er for kort til dine valg for primeren")
+
         return cleaned_data
