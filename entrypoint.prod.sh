@@ -2,9 +2,6 @@
 
 set -e
 
-echo "${0}: resetting database."
-python manage.py reset_db --noinput
-
 echo "${0}: running migrations."
 python manage.py migrate
 
