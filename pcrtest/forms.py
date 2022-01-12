@@ -2,14 +2,15 @@ from django import forms
 
 class PrimerForm(forms.Form):
     
-    dna = forms.CharField(max_length=300, label="DNA-streng", initial="TGGCCTGTGGGTCCCCCCATAGATCATAAGCCCAGGAGGAAGGGCTGTGTTTCAGGGCTGTGATCACTAGCACCCAGAACCGTCGACTGGCACAGAACAGGCACTTAGGGAACCCTCACTGAATGAATGAATGAATGAATGAATGAATGAATGTTTGGGCAAATAAACGCTGACAAGGACAGAAGGGCCTAGCGGGAAGGG",
-                                    help_text="Indtast (den øvre) DNA-streng")
+    dna = forms.CharField(max_length=300, label="Øvre DNA-streng", initial="TGGCCTGTGGGTCCCCCCATAGATCATAAGCCCAGGAGGAAGGGCTGTGTTTCAGGGCTGTGATCACTAGCACCCAGAACCGTCGACTGGCACAGAACAGGCACTTAGGGAACCCTCACTGAATGAATGAATGAATGAATGAATGAATGAATGTTTGGGCAAATAAACGCTGACAAGGACAGAAGGGCCTAGCGGGAAGGG",
+                                    help_text="Indtast den øvre del af DNA-streng")
 
     start = forms.IntegerField(label="Primer start",
-                               help_text="Ved hvilken baseposition (talt fra højre på DNA-strengen) skal din primer begynde? Angiv et heltal på mindst 1.",
+                                initial=21,
+                               help_text="Ved hvilken baseposition (talt fra venstre) skal din primer begynde? Angiv et heltal på mindst 1.",
                                min_value=1
                                )
-    length = forms.IntegerField(label="Primer længde", min_value=5,
+    length = forms.IntegerField(label="Primer længde", min_value=5, initial=21,
                                help_text="Hvor mange baser skal din primer bestå af? Angiv et heltal på mindst 5.")
 
 
