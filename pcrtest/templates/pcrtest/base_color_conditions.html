@@ -1,0 +1,13 @@
+{% if i == 'a' %}
+    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid white; background-color:#005A06; color:#e3ffef;">A</td>
+    {% elif i == 't' %}
+    <td class="alert alert-danger font-weight-bold" style="border-radius:0;border:1px solid white; background-color:#B8231F;color:#fceeee">T</td>
+    {% elif i == 'c' %}
+    <td class="alert alert-info font-weight-bold" style="border-radius:0; border:1px solid white; background-color:#003D83;color:#e5f1ff">C</td>
+    {% elif i == 'g' %}
+    <td class="alert alert-warning font-weight-bold" style="border-radius:0; border:1px solid white; background-color:#000207;color:#f5f5f5">G</td>
+    {% elif i == '-' %}
+    <td class="border"></td>
+    {% else %}
+    <td class="border"></td>
+{% endif %}

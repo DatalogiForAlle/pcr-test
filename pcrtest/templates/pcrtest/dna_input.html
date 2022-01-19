@@ -1,0 +1,17 @@
+{% extends 'pcrtest/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h2 class="mt-5"><span class="h4">Trin 1: </span>Angiv DNA-streng</h2>
+<p>
+    Du skal her angive (den øvre del af) den DNA-streng, du vil bruge i PCR-testen.  
+</p>
+<form action="" class="mt-5" method="POST" novalidate>
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div class="d-flex justify-content-center mb-5">
+        <button type="submit" class="btn btn-primary">Videre</button>
+    </div>
+</form>
+{% endblock content %}
