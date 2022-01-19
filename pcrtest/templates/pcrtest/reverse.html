@@ -29,33 +29,13 @@
         <tr class="text-center">
             <td class="text-nowrap">Øvre DNA-streng</td>
             {% for i in upper_dna %}
-                {% if i == 'a' %}
-                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
-                {% elif i == 't' %}
-                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
-                {% elif i == 'c' %}
-                    <td class="alert alert-warning font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">C</td>
-                {% elif i == 'g' %}
-                    <td class="alert alert-danger font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">G</td>
-                {% endif %}
+                {% include 'pcrtest/base_color_conditions.html' %}
             {% endfor %}
         </tr>
         <tr class="text-center">
             <td class="border-bottom text-nowrap">Reverse primer</td>
             {% for i in reverse_primer_to_show %}
-                {% if i == 'a' %}
-                    <td class="alert alert-success font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">A</td>
-                {% elif i == 't' %}
-                    <td class="alert alert-info font-weight-bold" style="border-radius:0;border:1px solid #D3D3D3">T</td>
-                {% elif i == 'c' %}
-                    <td class="alert alert-warning font-weight-bold" style="border-radius:0; border:1px solid #D3D3D3">C</td>
-                {% elif i == 'g' %}
-                    <td class="alert alert-danger font-weight-bold" style="border-radius:0; border:1px solid #D3D3D3">G</td>
-                {% elif i == '-' %}
-                    <td class="border"></td>
-                {% else %}
-                    <td class="border"></td>
-                {% endif %}
+                {% include 'pcrtest/base_color_conditions.html' %}
             {% endfor %}
         </tr>
     </table>
