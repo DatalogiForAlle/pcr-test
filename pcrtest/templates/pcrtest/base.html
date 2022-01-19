@@ -21,8 +21,13 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    {% if request.session.forward_primer_is_good %}
+                    {% if request.session.upper_dna %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dna-input' %}">DNA input</a></li>
+                    {% endif %}
+                    {% if request.session.forward_primer_start %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'forward-primer' %}">Forward primer</a></li>
+                    {% endif %}
+                    {% if request.session.forward_primer_is_good %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'reverse-primer' %}">Reverse primer</a></li>
                     {% endif %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'clear-session' %}">Clear Session</a></li>

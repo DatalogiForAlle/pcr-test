@@ -3,9 +3,9 @@
 
 {% block content %}
 
-<h2 class="mt-5"><span class="h4">Opgave 2: </span>Konstruktion af reverse primer</h2>
+<h2 class="mt-5"><span class="h4">Trin 3: </span>Konstruktion af reverse primer</h2>
 <p>
-    Du skal nu konstuerer en brugbar 'reverse primer' til brug ved PCR-testen.<br>
+    Du skal nu konstruere en brugbar 'reverse primer' til brug ved PCR-testen.<br>
     Udgangspunktet er den DNA-streng og den forward primer, du fandt frem til i opgave 1.
 </p>
 
@@ -52,7 +52,7 @@
                 {% elif i == 'g' %}
                     <td class="alert alert-danger font-weight-bold" style="border-radius:0; border:1px solid #D3D3D3">G</td>
                 {% elif i == '-' %}
-                    <td class="border">?</td>
+                    <td class="border"></td>
                 {% else %}
                     <td class="border"></td>
                 {% endif %}
@@ -117,18 +117,18 @@
             {% endif %}
         </tr>
         <tr>
-            <td>Kan ikke binde til sig selv</td>
-            <td>Uddybning...</td>
-            {% if cant_bind_to_itself %}
+            <td>Ikke primer-dimer</td>
+            <td>Primeren skal ikke kunne binde til sig selv</td>
+            {% if primer_dimer_condition %}
                 <td style="color:green"><big>&#10003;</big></td>
             {% else %}
                 <td style="color:red"><big>&#10007;</big></td>
             {% endif %}
         </tr>
         <tr>
-            <td>Kan ikke binde til forward primer</td>
-            <td>Uddybning...</td>
-            {% if cant_bind_to_itself %}
+            <td>Ikke hetero-dimer</td>
+            <td>De to primere skal ikke kunne binde til hinanden</td>
+            {% if hetero_dimer_condition %}
                 <td style="color:green"><big>&#10003;</big></td>
             {% else %}
                 <td style="color:red"><big>&#10007;</big></td>
