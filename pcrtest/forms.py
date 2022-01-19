@@ -2,15 +2,14 @@ from django import forms
 
 class ForwardPrimerForm(forms.Form):
     
-    dna = forms.CharField(max_length=300, label="Øvre DNA-streng", initial="TGGCCTGTGGGTCCCCCCATAGATCATAAGCCCAGGAGGAAGGGCTGTGTTTCAGGGCTGTGATCACTAGCACCCAGAACCGTCGACTGGCACAGAACAGGCACTTAGGGAACCCTCACTGAATGAATGAATGAATGAATGAATGAATGAATGTTTGGGCAAATAAACGCTGACAAGGACAGAAGGGCCTAGCGGGAAGGG",
+    dna = forms.CharField(max_length=300, label="Øvre DNA-streng", initial="",
                                     help_text="Indtast den øvre del af DNA-streng")
 
     start = forms.IntegerField(label="Primer start",
-                                initial=21,
                                help_text="Ved hvilken baseposition (talt fra venstre) skal din primer begynde? Angiv et heltal på mindst 1.",
                                min_value=1
                                )
-    length = forms.IntegerField(label="Primer længde", min_value=5, initial=21,
+    length = forms.IntegerField(label="Primer længde", min_value=5,
                                help_text="Hvor mange baser skal din forward primer bestå af? Angiv et heltal på mindst 5.")
 
     def clean_dna(self):

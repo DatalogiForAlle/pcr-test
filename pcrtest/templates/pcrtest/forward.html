@@ -16,12 +16,14 @@
         <button type="submit" class="btn btn-primary">Afprøv forward primer</button>
     </div>
 </form>
+
 <br><br>
+
 {% if forward_primer_to_show %}
 
 <!-- Include visual representation of dna and primer -->
 {% include 'pcrtest/forward_include.html' %}
-
+<br>
 <h4>Fakta om din forward primer</h4>
 <ul>
     {% if occurences == 1 %}
@@ -31,8 +33,8 @@
     {% endif %}
     <li>Din primers smeltepunkt er <span class="font-weight-bold">{{ melting_point }}</span>&#8451.</li>
     <li>Netop <span class="font-weight-bold">{{ tail_count }}</span> ud af de sidste 5 baser i din primer er enten 'C' eller 'G'</li>
-
 </ul>
+<br>
 <table class="table table-striped my-5"> 
     <thead>
         <tr>
@@ -69,12 +71,21 @@
                 <td style="color:red"><big>&#10007;</big></td>
             {% endif %}
         </tr>
+        <tr>
+            <td>Kan ikke binde til sig selv</td>
+            <td>Uddybning...</td>
+            {% if cant_bind_to_itself %}
+                <td style="color:green"><big>&#10003;</big></td>
+            {% else %}
+                <td style="color:red"><big>&#10007;</big></td>
+            {% endif %}
+        </tr>
     </tbody>
 </table>
 
     {% if request.session.forward_primer_is_good %}    
         <div class="alert alert-success">
-            Din forward primer lever op til alle krav. Du kan nu gå videre og konstuere en 'reverse primer' til DNA-strengen.
+            Din forward primer lever op til alle krav. Du kan nu gå videre og konstruere en 'reverse primer' til DNA-strengen.
         </div>
         <form action="{% url 'reverse-primer' %}" class="mt-5" method="GET">
             <div class="d-flex justify-content-center">

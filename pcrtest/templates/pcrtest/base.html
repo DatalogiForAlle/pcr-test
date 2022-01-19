@@ -20,10 +20,13 @@
             <a class="navbar-brand" href="{% url 'forward-primer' %}">PCR-test</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
-                {% comment %} <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Link 2</a></li>
-                </ul> {% endcomment %}
+                <ul class="navbar-nav ml-auto">
+                    {% if request.session.forward_primer_is_good %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'forward-primer' %}">Forward primer</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'reverse-primer' %}">Reverse primer</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'clear-session' %}">Clear Session</a></li>
+                </ul>
             </div>
         </div>
     </nav>

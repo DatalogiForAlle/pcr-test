@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import ForwardPrimerForm, ReversePrimerForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -28,9 +28,26 @@ def inverse_string(some_string):
 def home(request):
     return HttpResponseRedirect(reverse('forward-primer'))
 
+
+def clear_session(request):
+
+    for var in ['upper_dna', 'forward_primer_length', 'reverse_primer_length', 'forward_primer_start', 'reverse_primer_start', 'forward_primer_is_good']:
+        if var in request.session:
+            del request.session[var]
+    
+    return redirect(reverse('forward-primer'))
+
 def forward_primer(request):
 
-    form = ForwardPrimerForm
+    if 'upper_dna' in request.session:
+        form = ForwardPrimerForm(
+            initial={
+                'dna':request.session['upper_dna'].upper(),
+                'start':request.session['forward_primer_start'],
+                'length':request.session['forward_primer_length']
+                })
+    else:
+        form = ForwardPrimerForm()
     context = {}
     context["range"] = range(36)
 
@@ -82,9 +99,13 @@ def forward_primer(request):
 
 @require_GET
 def reverse_primer(request):
+    if not 'forward_primer_is_good' in request.session:
+        return HttpResponseRedirect(reverse('forward-primer'))
     if not request.session['forward_primer_is_good']:
         return HttpResponseRedirect(reverse('forward-primer'))
 
+
+        
     forward_primer_start = int(request.session['forward_primer_start']) - 1 
     forward_primer_length = int(request.session['forward_primer_length'])
     upper_dna = request.session['upper_dna']
@@ -95,7 +116,17 @@ def reverse_primer(request):
     f_primer = upper_dna[forward_primer_start: forward_primer_start + forward_primer_length]
     forward_primer_to_show = " " * forward_primer_start + f_primer + \
         " " * (len(upper_dna) - forward_primer_start - forward_primer_length)
-    form = ReversePrimerForm(len(upper_dna)) 
+
+    if 'reverse_primer_start' in request.session:
+        form = ReversePrimerForm(len(upper_dna),
+            initial={
+                'reverse_primer_start': request.session['reverse_primer_start'],
+                'reverse_primer_length': request.session['reverse_primer_length']
+            })
+    else:
+        form = ReversePrimerForm(len(upper_dna))
+
+
     context = {
         'upper_dna':upper_dna,
         'lower_dna':lower_dna,
@@ -105,10 +136,17 @@ def reverse_primer(request):
 
     if 'reverse_primer_start' in request.GET:
         form = ReversePrimerForm(len(upper_dna), request.GET)
+
+        request.session['reverse_primer_start'] = request.GET['reverse_primer_start']
+        request.session['reverse_primer_length'] = request.GET['reverse_primer_length']
+
         if form.is_valid():
+
+        
             reverse_primer_start = int(
                 request.GET['reverse_primer_start']) - 1
             reverse_primer_length = int(request.GET['reverse_primer_length'])
+
 
             reverse_primer_start_from_left = len(upper_dna) - reverse_primer_start - reverse_primer_length
             reverse_primer_end_from_left = len(upper_dna) - reverse_primer_start 
