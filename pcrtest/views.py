@@ -29,8 +29,17 @@ def inverse_string(some_string):
 
 def primer_dimer(primer):
     """ 
-    Return True if the primer can bind to itself. False otherwise. 
+    Input: A primer (string)
+    Returns True if the primer can bind to itself. False otherwise. 
     """
+    #reversed_primer = primer[::-1] 
+    # for i in range(5, len(primer)):
+    #     tail_of_primer = primer[-i:]
+    #     head_of_reversed = reversed_primer[:i]
+    #     inverse_head_of_reversed = inverse_string(head_of_reversed)
+    #     if tail_of_primer == inverse_head_of_reversed:
+    #         return True
+
     return False
 
 
@@ -48,8 +57,8 @@ def clear_session_helper(request):
         'upper_dna', 
         'forward_primer_length', 
         'reverse_primer_length', 
+        'reverse_primer_start',
         'forward_primer_start', 
-        'reverse_primer_start', 
         'forward_primer_is_good',
         'forward_primer'
     ]:

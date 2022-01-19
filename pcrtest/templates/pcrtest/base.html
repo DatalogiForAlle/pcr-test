@@ -30,7 +30,9 @@
                     {% if request.session.forward_primer_is_good %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'reverse-primer' %}">Reverse primer</a></li>
                     {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'clear-session' %}">Clear Session</a></li>
+                    {% if request.session.upper_dna %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'clear-session' %}">Genstart</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
