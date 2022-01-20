@@ -22,17 +22,16 @@ class DNAForm(forms.Form):
         return upper_dna
 
 
-class ForwardPrimerForm(forms.Form):
-    
-    start = forms.IntegerField(label="Primer start",
-                               help_text="Ved hvilken baseposition (talt fra venstre) skal din primer begynde? Angiv et heltal på mindst 1.",
-                               min_value=1
-                               )
+
+class PrimerForm(forms.Form):
+
+    start = forms.IntegerField(label="Primer start", min_value=1)
     length = forms.IntegerField(label="Primer længde", min_value=5,
-                               help_text="Hvor mange baser skal din forward primer bestå af? Angiv et heltal på mindst 5.")
+                                help_text="Hvor mange baser skal primeren bestå af? Angiv et heltal på mindst 5.")
+
 
     def __init__(self, dna_length, *args, **kwargs):
-        super(ForwardPrimerForm, self).__init__(*args, **kwargs)
+        super(PrimerForm, self).__init__(*args, **kwargs)
         self.dna_length = dna_length
 
     def clean(self):
@@ -53,32 +52,18 @@ class ForwardPrimerForm(forms.Form):
         return cleaned_data
 
 
-class ReversePrimerForm(forms.Form):
-    
-    reverse_primer_start = forms.IntegerField(label="Reverse primer start",
-                               help_text="Ved hvilken baseposition (talt fra højre) skal din primer begynde? Angiv et heltal på mindst 1.",
-                               min_value=1)
-    reverse_primer_length = forms.IntegerField(label="Reverse primer længde", 
-                               help_text="Hvor mange baser skal din reverse primer bestå af? Angiv et heltal på mindst 5.",
-                               min_value=5)
+class ForwardPrimerForm(PrimerForm):
 
-    def __init__(self, dna_length, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        super(ForwardPrimerForm, self).__init__(*args, **kwargs)
+        self.fields['start'].label = "Forward primer start"
+        self.fields['start'].help_text = "Ved hvilken baseposition skal primeren begynde? Angiv et heltal på mindst 1."
+        self.fields['length'].label = "Forward primer længde"
+
+class ReversePrimerForm(PrimerForm):
+
+    def __init__(self, *args, **kwargs):
         super(ReversePrimerForm, self).__init__(*args, **kwargs)
-        self.dna_length = dna_length
-
-    def clean(self):
-        """ 
-        Form validation that depends on more than one input value. 
-        Error message will be shown on top of the form. 
-        """
-        cleaned_data = super().clean()
-        length = cleaned_data.get("reverse_primer_length")
-        start = cleaned_data.get("reverse_primer_start")
-
-        if length and start:
-
-           if start + length > self.dna_length + 1:
-               raise forms.ValidationError(
-                   "DNA-strengen er for kort til dine valg for primeren")
-
-        return cleaned_data
+        self.fields['start'].label = "Reverse primer start"
+        self.fields['start'].help_text = "Ved hvilken baseposition (talt fra højre) skal primeren begynde? Angiv et heltal på mindst 1."
+        self.fields['length'].label = "Reverse primer længde"

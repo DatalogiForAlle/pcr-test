@@ -22,7 +22,7 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     {% if request.session.upper_dna %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'dna-input' %}">DNA input</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dna-input' %}">DNA-streng</a></li>
                     {% endif %}
                     {% if request.session.forward_primer_start %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'forward-primer' %}">Forward primer</a></li>

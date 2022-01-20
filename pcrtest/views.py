@@ -3,67 +3,8 @@ from .forms import DNAForm, ForwardPrimerForm, ReversePrimerForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
+from .helpers import *
 
-INVERSE_BASE = {
-    'a': 't',
-    't': 'a',
-    'c': 'g',
-    'g': 'c'
-}
-
-def count_substring(string, str_to_search_for):
-    """ Returns the number of occurences of substring in string (with overlaps) """
-    count = 0
-    for i in range(len(string) - len(str_to_search_for) + 1):
-        if string[i:i+len(str_to_search_for)] == str_to_search_for:
-            count += 1
-    return count
-
-def inverse_string(some_string):
-    """ Helper function that returns DNA-inverse string of input DNA """
-    result = ""
-    for c in some_string:
-        result += INVERSE_BASE[c]
-    return result
-
-
-def primer_dimer(primer):
-    """ 
-    Input: A primer (string)
-    Returns True if the primer can bind to itself. False otherwise. 
-    """
-    #reversed_primer = primer[::-1] 
-    # for i in range(5, len(primer)):
-    #     tail_of_primer = primer[-i:]
-    #     head_of_reversed = reversed_primer[:i]
-    #     inverse_head_of_reversed = inverse_string(head_of_reversed)
-    #     if tail_of_primer == inverse_head_of_reversed:
-    #         return True
-
-    return False
-
-
-def hetero_dimer(forward_primer, reverse_primer):
-    """ 
-    Return True if the two primers can bind to each other. 
-    """
-    return False
-
-
-def clear_session_helper(request):
-    """ Helper function that clears all session variables """
-
-    for var in [
-        'upper_dna', 
-        'forward_primer_length', 
-        'reverse_primer_length', 
-        'reverse_primer_start',
-        'forward_primer_start', 
-        'forward_primer_is_good',
-        'forward_primer'
-    ]:
-        if var in request.session:
-            del request.session[var]
 
 def clear_session(request):
     clear_session_helper(request)
@@ -107,7 +48,7 @@ def forward_primer(request):
                 'length':request.session['forward_primer_length']
                 })
     else:
-        form = ForwardPrimerForm(len(upper_dna))
+        form = ForwardPrimerForm(dna_length)
 
     context = {}
     context['upper_dna'] = upper_dna
@@ -125,12 +66,10 @@ def forward_primer(request):
         
             # Make the primer string to be shown on page
             context['forward_primer_to_show'] = " " * primer_start + primer + \
-                " " * (len(upper_dna) - primer_start - primer_length)
+                " " * (dna_length - primer_start - primer_length)
           
             # Calculation of the primer's melting point
-            num_c = primer.count('c')
-            num_g = primer.count('g') 
-            primer_melting_point = round(64.9 + 41*(num_c + num_g)/primer_length - 41*16.4/primer_length, 1)
+            primer_melting_point = calculate_melting_point(primer)
             context['melting_point'] = primer_melting_point
             context['good_melting_point'] = 52 <= primer_melting_point <= 58
 
@@ -143,8 +82,8 @@ def forward_primer(request):
             # Calculate number of places the primer fits the lower DNA-string
             context['occurences'] = count_substring(upper_dna, primer)
 
-            # Check for if the primer cant bind to itself
-            context['primer_dimer_condition'] = not primer_dimer(primer)
+            # Check for if the primer can bind to itself
+            context['primer_dimer_condition'] = not check_for_dimers(primer, primer[::-1])
             
             # Does primer satisfy all criteria?
             primer_is_good = (context['occurences'] == 1) and context['primer_tail_condition'] and context['good_melting_point'] and context['primer_dimer_condition'] 
@@ -157,7 +96,6 @@ def forward_primer(request):
             context['show_results'] = True
             
     context['form'] = form
-
     return render(request, "pcrtest/forward.html", context)
 
 @require_GET
@@ -179,32 +117,32 @@ def reverse_primer(request):
         " " * (len(upper_dna) - forward_primer_start - forward_primer_length)
 
     if 'reverse_primer_start' in request.session:
-        form = ReversePrimerForm(len(upper_dna),
+        form = ReversePrimerForm(dna_length,
             initial={
-                'reverse_primer_start': request.session['reverse_primer_start'],
-                'reverse_primer_length': request.session['reverse_primer_length']
+                'start': request.session['reverse_primer_start'],
+                'length': request.session['reverse_primer_length']
             })
     else:
-        form = ReversePrimerForm(len(upper_dna))
+        form = ReversePrimerForm(dna_length)
 
     context = {
         'upper_dna':upper_dna,
         'lower_dna':lower_dna,
         'forward_primer_to_show':forward_primer_to_show,
-        'counter': range(1, len(upper_dna) + 1)[::-1]
+        'counter': range(1, dna_length + 1)[::-1]
         }
 
-    if 'reverse_primer_start' in request.GET:
-        form = ReversePrimerForm(len(upper_dna), request.GET)
+    if 'start' in request.GET:
+        form = ReversePrimerForm(dna_length, request.GET)
 
-        request.session['reverse_primer_start'] = request.GET['reverse_primer_start']
-        request.session['reverse_primer_length'] = request.GET['reverse_primer_length']
+        request.session['reverse_primer_start'] = request.GET['start']
+        request.session['reverse_primer_length'] = request.GET['length']
 
         if form.is_valid():
         
             reverse_primer_start = int(
-                request.GET['reverse_primer_start']) - 1
-            reverse_primer_length = int(request.GET['reverse_primer_length'])
+                request.GET['start']) - 1
+            reverse_primer_length = int(request.GET['length'])
 
             reverse_primer_start_from_left = len(upper_dna) - reverse_primer_start - reverse_primer_length
             reverse_primer_end_from_left = len(upper_dna) - reverse_primer_start 
@@ -215,10 +153,7 @@ def reverse_primer(request):
                 " " * (len(upper_dna) - reverse_primer_end_from_left)
 
             # Calculation of the reverse primer's melting point
-            num_c = reverse_primer.count('c')
-            num_g = reverse_primer.count('g')
-            reverse_primer_melting_point = round(
-                64.9 + 41*(num_c + num_g)/reverse_primer_length - 41*16.4/reverse_primer_length, 1)
+            reverse_primer_melting_point = calculate_melting_point(reverse_primer)
             context['melting_point'] = reverse_primer_melting_point
             context['good_melting_point'] = 52 <= reverse_primer_melting_point <= 58
 
@@ -231,12 +166,12 @@ def reverse_primer(request):
             # Calculate number of places the primer fits the lower DNA-string
             context['occurences'] = count_substring(lower_dna, reverse_primer)
 
-            # Check if the primer cant bind to itself
-            context['primer_dimer_condition'] = not primer_dimer(reverse_primer)
+            # Check if the primer can bind to itself
+            context['primer_dimer_condition'] = not check_for_dimers(reverse_primer, reverse_primer[::-1])
             
             # Check if the primer can bind to the reverse primer
-            context['hetero_dimer_condition'] = not hetero_dimer(request.session['forward_primer'], 
-                reverse_primer)
+            context['hetero_dimer_condition'] = not check_for_dimers(request.session['forward_primer'], 
+                reverse_primer[::-1])
 
             # Does primer satisfy all criteria?
             context["reverse_primer_is_good"] = (
@@ -244,6 +179,6 @@ def reverse_primer(request):
 
 
     context['reverse_primer_to_show'] = reverse_primer_to_show
-
     context['form'] = form
+
     return render(request, "pcrtest/reverse.html", context)
