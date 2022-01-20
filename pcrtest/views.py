@@ -82,7 +82,7 @@ def forward_primer(request):
             # Calculate number of places the primer fits the lower DNA-string
             context['occurences'] = count_substring(upper_dna, primer)
 
-            # Check for if the primer can bind to itself
+            # Check if the primer can bind to itself
             context['primer_dimer_condition'] = not check_for_dimers(primer, primer[::-1])
             
             # Does primer satisfy all criteria?
@@ -170,9 +170,27 @@ def reverse_primer(request):
             context['primer_dimer_condition'] = not check_for_dimers(reverse_primer, reverse_primer[::-1])
             
             # Check if the primer can bind to the reverse primer
-            context['hetero_dimer_condition'] = not check_for_dimers(request.session['forward_primer'], 
-                reverse_primer[::-1])
+            forward_primer = request.session['forward_primer']
+            
+            # For dimer-check algorithms to work, the two primers must have the same lengths 
+            
+            if len(forward_primer) < len(reverse_primer):
+               x_fill = 'x' * (len(reverse_primer) - len(forward_primer))
+               forward_primer_x = forward_primer + x_fill
+               reverse_primer_x = reverse_primer    
+            elif len(forward_primer) > len(reverse_primer):
+                x_fill = 'x' * (len(forward_primer) - len(reverse_primer))
+                reverse_primer_x = reverse_primer + x_fill
+                forward_primer_x = forward_primer    
+            else: 
+                forward_primer_x = forward_primer
+                reverse_primer_x = reverse_primer
 
+            assert len(forward_primer_x) == len(reverse_primer_x)
+            
+            context['hetero_dimer_condition'] = not check_for_dimers(forward_primer_x, 
+                reverse_primer_x[::-1])
+            
             # Does primer satisfy all criteria?
             context["reverse_primer_is_good"] = (
                 context['occurences'] == 1) and context['primer_tail_condition'] and context['good_melting_point'] and context['hetero_dimer_condition']

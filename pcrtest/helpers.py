@@ -6,7 +6,8 @@ INVERSE_BASE = {
     'a': 't',
     't': 'a',
     'c': 'g',
-    'g': 'c'
+    'g': 'c',
+    'x': 'x'
 }
 
 
@@ -107,10 +108,15 @@ def check_for_dimers(primer1, primer2):
         
         total_matches_in_overlap = count_matches(overlap_primer, overlap_reverse)
         if total_matches_in_overlap > TOTAL_MATCH_LIMIT:
+            print("Total match too big (1):",
+                  total_matches_in_overlap, overlap_primer, overlap_reverse)
+
             return True
 
         longest_consecutive_match = determine_longest_consecutive_match(overlap_primer, inverse_string(overlap_reverse))
         if longest_consecutive_match > CONSECUTIVE_MATCH_LIMIT:
+            print("Consecutive match to big (2)",
+                  longest_consecutive_match, overlap_primer, overlap_reverse)
             return True
             
     for i in range(1, len(primer1)):
@@ -130,11 +136,15 @@ def check_for_dimers(primer1, primer2):
         total_matches_in_overlap = count_matches(
             overlap_primer, overlap_reverse)
         if total_matches_in_overlap > TOTAL_MATCH_LIMIT:
+            print("Total match too big (2):", total_matches_in_overlap, overlap_primer, overlap_reverse)
+
             return True
         
         longest_consecutive_match = determine_longest_consecutive_match(
             overlap_primer, inverse_string(overlap_reverse))
         if longest_consecutive_match > CONSECUTIVE_MATCH_LIMIT:
+            print("Consecutive match to big (2)", longest_consecutive_match, overlap_primer, overlap_reverse)
+
             return True
 
     return False
@@ -157,5 +167,7 @@ def clear_session_helper(request):
 
 
 if __name__ == "__main__":
-    determine_longest_consecutive_match("be1234gåsa", "xyz1234abe")
+    primer = "aaatttxxx"
+    print(not check_for_dimers(primer, primer[::-1]))
+    
 
