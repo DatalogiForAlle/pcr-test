@@ -3,13 +3,13 @@
         <tr class="text-center">
             <td class="border-bottom">Forward primer</td>
             {% for i in forward_primer_to_show %}
-                {% include 'pcrtest/base_color_conditions.html' %}
+                {% include 'pcrtest/color_conditions.html' %}
             {% endfor %}
         </tr>
         <tr class="text-center">
             <td class="text-nowrap">Nedre DNA-streng</td>
             {% for i in lower_dna %}
-                {% include 'pcrtest/base_color_conditions.html' %}
+                {% include 'pcrtest/color_conditions.html' %}
             {% endfor %}
             </tr>
         <tr>

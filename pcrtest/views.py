@@ -30,23 +30,18 @@ def inverse_string(some_string):
 def primer_dimer(primer):
     """ 
     Input: A primer (string)
-    Returns True if the primer can bind to itself. False otherwise. 
+    Should return True if the primer can bind to itself. False otherwise. 
     """
-    #reversed_primer = primer[::-1] 
-    # for i in range(5, len(primer)):
-    #     tail_of_primer = primer[-i:]
-    #     head_of_reversed = reversed_primer[:i]
-    #     inverse_head_of_reversed = inverse_string(head_of_reversed)
-    #     if tail_of_primer == inverse_head_of_reversed:
-    #         return True
-
+    # Not implemented
     return False
 
 
 def hetero_dimer(forward_primer, reverse_primer):
     """ 
-    Return True if the two primers can bind to each other. 
+    Both input values are strings.
+    Should return True if the two primers can bind to each other. False otherwise 
     """
+    # Not implemented
     return False
 
 
@@ -107,7 +102,7 @@ def forward_primer(request):
                 'length':request.session['forward_primer_length']
                 })
     else:
-        form = ForwardPrimerForm(len(upper_dna))
+        form = ForwardPrimerForm(dna_length)
 
     context = {}
     context['upper_dna'] = upper_dna
@@ -125,7 +120,7 @@ def forward_primer(request):
         
             # Make the primer string to be shown on page
             context['forward_primer_to_show'] = " " * primer_start + primer + \
-                " " * (len(upper_dna) - primer_start - primer_length)
+                " " * (dna_length - primer_start - primer_length)
           
             # Calculation of the primer's melting point
             num_c = primer.count('c')
@@ -157,7 +152,7 @@ def forward_primer(request):
             context['show_results'] = True
             
     context['form'] = form
-
+    print("HELLO")
     return render(request, "pcrtest/forward.html", context)
 
 @require_GET
@@ -179,32 +174,32 @@ def reverse_primer(request):
         " " * (len(upper_dna) - forward_primer_start - forward_primer_length)
 
     if 'reverse_primer_start' in request.session:
-        form = ReversePrimerForm(len(upper_dna),
+        form = ReversePrimerForm(dna_length,
             initial={
-                'reverse_primer_start': request.session['reverse_primer_start'],
-                'reverse_primer_length': request.session['reverse_primer_length']
+                'start': request.session['reverse_primer_start'],
+                'length': request.session['reverse_primer_length']
             })
     else:
-        form = ReversePrimerForm(len(upper_dna))
+        form = ReversePrimerForm(dna_length)
 
     context = {
         'upper_dna':upper_dna,
         'lower_dna':lower_dna,
         'forward_primer_to_show':forward_primer_to_show,
-        'counter': range(1, len(upper_dna) + 1)[::-1]
+        'counter': range(1, dna_length + 1)[::-1]
         }
 
-    if 'reverse_primer_start' in request.GET:
-        form = ReversePrimerForm(len(upper_dna), request.GET)
+    if 'start' in request.GET:
+        form = ReversePrimerForm(dna_length, request.GET)
 
-        request.session['reverse_primer_start'] = request.GET['reverse_primer_start']
-        request.session['reverse_primer_length'] = request.GET['reverse_primer_length']
+        request.session['reverse_primer_start'] = request.GET['start']
+        request.session['reverse_primer_length'] = request.GET['length']
 
         if form.is_valid():
         
             reverse_primer_start = int(
-                request.GET['reverse_primer_start']) - 1
-            reverse_primer_length = int(request.GET['reverse_primer_length'])
+                request.GET['start']) - 1
+            reverse_primer_length = int(request.GET['length'])
 
             reverse_primer_start_from_left = len(upper_dna) - reverse_primer_start - reverse_primer_length
             reverse_primer_end_from_left = len(upper_dna) - reverse_primer_start 
@@ -244,6 +239,6 @@ def reverse_primer(request):
 
 
     context['reverse_primer_to_show'] = reverse_primer_to_show
-
     context['form'] = form
+
     return render(request, "pcrtest/reverse.html", context)

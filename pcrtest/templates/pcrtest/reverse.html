@@ -29,13 +29,13 @@
         <tr class="text-center">
             <td class="text-nowrap">Øvre DNA-streng</td>
             {% for i in upper_dna %}
-                {% include 'pcrtest/base_color_conditions.html' %}
+                {% include 'pcrtest/color_conditions.html' %}
             {% endfor %}
         </tr>
         <tr class="text-center">
             <td class="border-bottom text-nowrap">Reverse primer</td>
             {% for i in reverse_primer_to_show %}
-                {% include 'pcrtest/base_color_conditions.html' %}
+                {% include 'pcrtest/color_conditions.html' %}
             {% endfor %}
         </tr>
     </table>
