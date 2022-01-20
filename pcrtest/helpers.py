@@ -72,8 +72,9 @@ def determine_longest_consecutive_match(seq1, seq2):
             if substr1 == substr2:
                 if len(substr1) > max_i:
                     max_i = len(substr1)
-                    if max_i > CONSECUTIVE_MATCH_LIMIT:
-                        return max_i
+                    # If we get performance issues, we can cut the search of here:
+                    #if max_i > CONSECUTIVE_MATCH_LIMIT:
+                    #    return max_i
         if max_i > max:
             max = max_i
     return max
