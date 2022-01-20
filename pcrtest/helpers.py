@@ -1,3 +1,7 @@
+TOTAL_MATCH_LIMIT = 10
+CONSECUTIVE_MATCH_LIMIT = 5
+
+
 INVERSE_BASE = {
     'a': 't',
     't': 'a',
@@ -33,25 +37,105 @@ def calculate_melting_point(primer):
 
     return melting_point
 
+def count_matches(seq1, seq2):
+    count = 0
+    for idx, char in enumerate(seq1):
+        if char == INVERSE_BASE[seq2[idx]]:
+            count += 1
+    return count
 
-def primer_dimer(primer):
-    """ 
-    Helper function to determine if primer has 'primer dimer' (can bind to itself)
-    Input: A primer (string)
-    Should return True if the primer can bind to itself. False otherwise. 
+
+def determine_longest_consecutive_match(seq1, seq2):
     """
-    # Not implemented
-    return False
-
-
-def hetero_dimer(forward_primer, reverse_primer):
-    """ 
-    Helper function to determine if primers has 'hetero dimer' (can bind to each other)
-
-    Both input values are strings.
-    Should return True if the two primers can bind to each other. False otherwise 
+    Helper functions that determines the length of the longest consecutive match in two strings of equal length
+    Examples
+    seq1 = "abe1234gås"
+    seq2 = "gås1234abe"
+    should return 4
+    
+    seq1 = "be1234gåsa"
+    seq2 = "gås1234abe"
+    should return 0
+    
     """
-    # Not implemented
+    seq1 = seq1.lower()
+    seq2 = seq2.lower()
+    assert len(seq1) == len(seq2) 
+
+    max = 0
+    for i in range(len(seq1)+1):
+        max_i = 0
+        for j in range(i, len(seq1)+1):
+            substr1 = seq1[i:j]
+            substr2 = seq2[i:j]
+            
+            if substr1 == substr2:
+                if len(substr1) > max_i:
+                    max_i = len(substr1)
+                    if max_i > CONSECUTIVE_MATCH_LIMIT:
+                        return max_i
+        if max_i > max:
+            max = max_i
+    return max
+
+
+def check_for_dimers(primer1, primer2):
+    """ 
+    Helper function to check for primer-dimer and hetero-dimer
+    Should return True if the primers bind to each other. False otherwise. 
+    """
+    primer1 = primer1.lower()
+    primer2 = primer2.lower()
+
+    
+    # Check for matches in overlap (part 1)
+    for i in range(1, len(primer1) + 1):
+        # Let's say that the primer is 12345
+        # Then the priver_reverse is 54321
+        # In this loop we explore the matches in the overlaps below:
+        # 12345
+        # ----------
+        #     54321
+        #    54321
+        #   54321
+        #  54321
+        # 54321
+
+        overlap_primer = primer1[-i:]
+        overlap_reverse = primer2[:i]
+        
+        total_matches_in_overlap = count_matches(overlap_primer, overlap_reverse)
+        if total_matches_in_overlap > TOTAL_MATCH_LIMIT:
+            return True
+
+        longest_consecutive_match = determine_longest_consecutive_match(overlap_primer, inverse_string(overlap_reverse))
+        if longest_consecutive_match > CONSECUTIVE_MATCH_LIMIT:
+            return True
+            
+    for i in range(1, len(primer1)):
+        # Check for total matches in overlap (part 2)
+        # In this loop we explore the matches in the overlaps below:
+        #     12345
+        # ----------
+        # 54321
+        #  54321
+        #   54321
+        #    54321
+
+        overlap_primer = primer1[:i]
+        overlap_reverse = primer2[-i:]
+
+
+        total_matches_in_overlap = count_matches(
+            overlap_primer, overlap_reverse)
+        if total_matches_in_overlap > TOTAL_MATCH_LIMIT:
+            return True
+        
+        longest_consecutive_match = determine_longest_consecutive_match(
+            overlap_primer, inverse_string(overlap_reverse))
+        if longest_consecutive_match > CONSECUTIVE_MATCH_LIMIT:
+            return True
+
     return False
 
 
@@ -71,6 +155,6 @@ def clear_session_helper(request):
             del request.session[var]
 
 
-def clear_session(request):
-    clear_session_helper(request)
-    return redirect(reverse('forward-primer'))
+if __name__ == "__main__":
+    determine_longest_consecutive_match("be1234gåsa", "xyz1234abe")
+

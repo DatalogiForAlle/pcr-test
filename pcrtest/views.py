@@ -82,8 +82,8 @@ def forward_primer(request):
             # Calculate number of places the primer fits the lower DNA-string
             context['occurences'] = count_substring(upper_dna, primer)
 
-            # Check for if the primer cant bind to itself
-            context['primer_dimer_condition'] = not primer_dimer(primer)
+            # Check for if the primer can bind to itself
+            context['primer_dimer_condition'] = not check_for_dimers(primer, primer[::-1])
             
             # Does primer satisfy all criteria?
             primer_is_good = (context['occurences'] == 1) and context['primer_tail_condition'] and context['good_melting_point'] and context['primer_dimer_condition'] 
@@ -96,7 +96,6 @@ def forward_primer(request):
             context['show_results'] = True
             
     context['form'] = form
-    print("HELLO")
     return render(request, "pcrtest/forward.html", context)
 
 @require_GET
@@ -167,12 +166,12 @@ def reverse_primer(request):
             # Calculate number of places the primer fits the lower DNA-string
             context['occurences'] = count_substring(lower_dna, reverse_primer)
 
-            # Check if the primer cant bind to itself
-            context['primer_dimer_condition'] = not primer_dimer(reverse_primer)
+            # Check if the primer can bind to itself
+            context['primer_dimer_condition'] = not check_for_dimers(reverse_primer, reverse_primer[::-1])
             
             # Check if the primer can bind to the reverse primer
-            context['hetero_dimer_condition'] = not hetero_dimer(request.session['forward_primer'], 
-                reverse_primer)
+            context['hetero_dimer_condition'] = not check_for_dimers(request.session['forward_primer'], 
+                reverse_primer[::-1])
 
             # Does primer satisfy all criteria?
             context["reverse_primer_is_good"] = (
