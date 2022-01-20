@@ -69,42 +69,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>Er specifik</td>
-            <td>Primeren skal passe præcis ét sted på DNA-strengen</td>
-            {% if occurences == 1 %}
-                <td style="color:green"><big>&#10003;</big></td>
-            {% else %}
-                <td style="color:red"><big>&#10007;</big></td>
-            {% endif %}
-        </tr>
-        <tr>
-            <td>Rigtigt smeltepunkt</td>
-            <td>Primerens smeltepunkt skal være mellem 52&#8451 og 58&#8451</td>
-            {% if good_melting_point %}
-                <td style="color:green"><big>&#10003;</big></td>
-            {% else %}
-                <td style="color:red"><big>&#10007;</big></td>
-            {% endif %}
-        </tr>
-        <tr>
-            <td>Kan binde på DNA-strengen</td>
-            <td>2 eller 3 ud af de sidste 5 baser skal være C eller G</td>
-            {% if primer_tail_condition %}
-                <td style="color:green"><big>&#10003;</big></td>
-            {% else %}
-                <td style="color:red"><big>&#10007;</big></td>
-            {% endif %}
-        </tr>
-        <tr>
-            <td>Ikke primer-dimer</td>
-            <td>Primeren skal ikke kunne binde til sig selv</td>
-            {% if primer_dimer_condition %}
-                <td style="color:green"><big>&#10003;</big></td>
-            {% else %}
-                <td style="color:red"><big>&#10007;</big></td>
-            {% endif %}
-        </tr>
+        {% include 'pcrtest/common_primer_conditions.html' %}
         <tr>
             <td>Ikke hetero-dimer</td>
             <td>De to primere skal ikke kunne binde til hinanden</td>
